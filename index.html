@@ -15,33 +15,33 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:#13282e}
 #view-landing,#view-sim{position:fixed;inset:0;overflow:hidden}
-#view-landing{background:linear-gradient(180deg,var(--deep) 0 420px,var(--cream) 420px 100%);overflow-y:auto}
+#view-landing{background:linear-gradient(180deg,var(--deep) 0 560px,var(--cream) 560px 100%);overflow-y:auto}
 #view-sim{display:none;background:var(--deep);color:#fff}
 #view-sim.active{display:flex;flex-direction:column}
 
-.hero{padding:34px 30px 34px;position:relative;overflow:hidden}
+.hero{padding:28px 30px 18px;position:relative;overflow:hidden}
 .hero:before{content:'';position:absolute;right:-110px;top:-80px;width:420px;height:420px;border-radius:50%;
 background:radial-gradient(circle,rgba(255,217,125,.16),transparent 66%)}
 .badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,217,125,.22);background:rgba(255,217,125,.1);
 border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--glt);text-transform:uppercase;margin-bottom:22px}
 .badge svg{opacity:.9}
 .hero-grid{display:grid;grid-template-columns:minmax(0,720px) 1fr;gap:24px;align-items:end}
-.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(34px,5vw,64px);line-height:1.02;color:#fff;margin-bottom:14px;max-width:700px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,60px);line-height:1.02;color:#fff;margin-bottom:14px;max-width:700px}
 .hero h1 em{font-style:italic;color:var(--peach);display:block}
-.hero p{max-width:690px;color:rgba(255,255,255,.74);font-size:19px;line-height:1.6}
+.hero p{max-width:690px;color:rgba(255,255,255,.74);font-size:17px;line-height:1.58}
 .warn-note{margin-top:18px;max-width:720px;background:rgba(255,217,125,.1);border:1px solid rgba(255,217,125,.24);border-radius:14px;padding:14px 16px;color:var(--glt);font-size:13px;line-height:1.6}
-.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:24px}
-.stat{min-width:120px}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px}
+.stat{min-width:120px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:14px 16px;border-radius:16px}
 .stat strong{display:block;font-size:36px;color:var(--peach);line-height:1}
-.stat span{display:block;margin-top:6px;color:rgba(255,255,255,.5);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.stat span{display:block;margin-top:6px;color:rgba(255,255,255,.62);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 .strip{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(7,78,89,.94);padding:14px 30px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
 .strip .label{font-size:12px;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:.08em}
 .pill{padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:11px;color:rgba(255,255,255,.88);font-weight:600}
 .strip .sub{font-size:12px;color:rgba(255,255,255,.58)}
-.section{padding:22px 30px 40px}
+.section{padding:18px 30px 40px}
 .section .eyebrow{font-size:12px;color:#63757c;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
 .section .desc{font-size:14px;color:#6a7b81;max-width:760px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:18px}
 .card{position:relative;background:#fff;border:1px solid rgba(0,49,60,.1);border-radius:22px;padding:22px;box-shadow:0 10px 30px rgba(0,49,60,.06);cursor:pointer;transition:var(--tr);overflow:hidden}
 .card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,49,60,.12);border-color:rgba(0,49,60,.2)}
 .card:before{content:'';position:absolute;inset:auto 0 0 0;height:4px;background:linear-gradient(90deg,var(--teal),var(--gold))}
@@ -522,13 +522,11 @@ function openSim(index){
   updateStateUI();
   $('view-landing').style.display = 'none';
   $('view-sim').classList.add('active');
+  addAIMessage(currentScenario.openingLine, currentScenario.aiRole, currentScenario.gender);
+  history.push({role:'assistant', content: currentScenario.openingLine});
+  inferSuggestions(currentScenario.openingLine);
   pingAPI();
   setTimeout(()=> $('inp').focus(), 120);
-  setTimeout(()=>{
-    addAIMessage(currentScenario.openingLine, currentScenario.aiRole, currentScenario.gender);
-    history.push({role:'assistant', content: currentScenario.openingLine});
-    inferSuggestions(currentScenario.openingLine);
-  }, 280);
 }
 
 function closeSim(){
