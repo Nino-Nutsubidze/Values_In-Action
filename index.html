@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Values in Action | Rise to Lead Week 6</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --deep:#00313C;--mid:#074E59;--teal:#005D67;--peach:#F1CEB3;--cream:#F0E9E0;
+  --dusty:#BC8A7E;--gray:#717C7D;--white:#fff;--warn:#C0392B;--amber:#D4842A;
+  --green:#1A7A5E;--gold:#B8860B;--glt:#FFD97D;--shadow:0 18px 40px rgba(0,0,0,.16);
+  --tr:.22s cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:#13282e}
+#view-landing,#view-sim{position:fixed;inset:0;overflow:hidden}
+#view-landing{background:linear-gradient(180deg,var(--deep) 0 420px,var(--cream) 420px 100%);overflow-y:auto}
+#view-sim{display:none;background:var(--deep);color:#fff}
+#view-sim.active{display:flex;flex-direction:column}
+
+.hero{padding:34px 30px 34px;position:relative;overflow:hidden}
+.hero:before{content:'';position:absolute;right:-110px;top:-80px;width:420px;height:420px;border-radius:50%;
+background:radial-gradient(circle,rgba(255,217,125,.16),transparent 66%)}
+.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,217,125,.22);background:rgba(255,217,125,.1);
+border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--glt);text-transform:uppercase;margin-bottom:22px}
+.badge svg{opacity:.9}
+.hero-grid{display:grid;grid-template-columns:minmax(0,720px) 1fr;gap:24px;align-items:end}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(34px,5vw,64px);line-height:1.02;color:#fff;margin-bottom:14px;max-width:700px}
+.hero h1 em{font-style:italic;color:var(--peach);display:block}
+.hero p{max-width:690px;color:rgba(255,255,255,.74);font-size:19px;line-height:1.6}
+.warn-note{margin-top:18px;max-width:720px;background:rgba(255,217,125,.1);border:1px solid rgba(255,217,125,.24);border-radius:14px;padding:14px 16px;color:var(--glt);font-size:13px;line-height:1.6}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:24px}
+.stat{min-width:120px}
+.stat strong{display:block;font-size:36px;color:var(--peach);line-height:1}
+.stat span{display:block;margin-top:6px;color:rgba(255,255,255,.5);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.strip{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(7,78,89,.94);padding:14px 30px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.strip .label{font-size:12px;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:.08em}
+.pill{padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:11px;color:rgba(255,255,255,.88);font-weight:600}
+.strip .sub{font-size:12px;color:rgba(255,255,255,.58)}
+.section{padding:22px 30px 40px}
+.section .eyebrow{font-size:12px;color:#63757c;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.section .desc{font-size:14px;color:#6a7b81;max-width:760px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:24px}
+.card{position:relative;background:#fff;border:1px solid rgba(0,49,60,.1);border-radius:22px;padding:22px;box-shadow:0 10px 30px rgba(0,49,60,.06);cursor:pointer;transition:var(--tr);overflow:hidden}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,49,60,.12);border-color:rgba(0,49,60,.2)}
+.card:before{content:'';position:absolute;inset:auto 0 0 0;height:4px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.card-top{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}
+.card-num{font-family:'DM Serif Display',serif;font-size:34px;color:rgba(0,49,60,.08);line-height:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700}
+.tag.teal{background:rgba(0,93,103,.12);color:var(--teal)}
+.tag.gold{background:rgba(184,134,11,.12);color:#8e6b00}
+.tag.warn{background:rgba(192,57,43,.12);color:var(--warn)}
+.card h3{font-family:'DM Serif Display',serif;font-size:24px;line-height:1.15;color:var(--deep);margin-bottom:8px}
+.card .sub{font-size:13px;color:#6b7b81;line-height:1.55;margin-bottom:12px}
+.persona{background:var(--cream);border-radius:12px;padding:12px 12px 10px;margin-bottom:14px}
+.persona strong{display:block;color:var(--deep);font-size:13px;margin-bottom:3px}
+.persona span{color:#687980;font-size:11px;line-height:1.5}
+.cta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.cta .skill{font-size:12px;color:var(--teal);font-weight:700;max-width:78%}
+.cta .go{width:36px;height:36px;border-radius:999px;display:grid;place-items:center;background:var(--deep);color:#fff;transition:var(--tr)}
+.card:hover .go{background:var(--gold);color:var(--deep)}
+
+.sim-header{padding:12px 16px;background:rgba(0,0,0,.25);display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.back{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;display:grid;place-items:center;cursor:pointer}
+.back:hover{background:rgba(255,255,255,.12)}
+.sh-info{flex:1;min-width:0}
+.sh-info .num{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.52);font-weight:700}
+.sh-info .title{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-actions{display:flex;gap:8px}
+.header-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;border-radius:10px;padding:10px 13px;font:600 12px 'DM Sans';cursor:pointer}
+.header-btn.gold{background:var(--peach);border:none;color:var(--deep)}
+.header-btn:hover{filter:brightness(1.05)}
+.subbar{background:var(--mid);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);flex-shrink:0}
+.subbar .badge-mini{background:rgba(255,217,125,.16);border:1px solid rgba(255,217,125,.26);padding:4px 9px;border-radius:999px;color:var(--glt);font-weight:700}
+.sim-shell{display:flex;flex:1;min-height:0}
+.sidebar{width:300px;flex-shrink:0;background:linear-gradient(180deg,rgba(0,0,0,.26),rgba(0,0,0,.18));border-right:1px solid rgba(255,255,255,.08);overflow:auto}
+.side-section{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.side-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:rgba(255,217,125,.52);margin-bottom:10px}
+.side-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px}
+.side-card .name{font-weight:700;color:#fff;margin-bottom:4px}
+.side-card .desc,.side-text{font-size:12px;line-height:1.65;color:rgba(255,255,255,.76)}
+.dim-tags{display:flex;flex-wrap:wrap;gap:6px}
+.dim{background:rgba(255,255,255,.12);border-radius:999px;padding:3px 9px;font-size:10px;color:#fff;font-weight:600}
+.stage{display:inline-flex;align-items:center;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.12);font-size:11px;color:#fff;font-weight:700}
+.meter{margin-top:12px}
+.meter .row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.82);margin-bottom:6px}
+.track{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#67d3da,var(--teal))}
+.fill.resistance{background:linear-gradient(90deg,#ff9387,var(--warn))}
+.fill.ownership{background:linear-gradient(90deg,#ffe2b0,var(--gold))}
+.tips{display:flex;flex-direction:column;gap:8px}
+.tip{font-size:12px;line-height:1.55;color:rgba(255,255,255,.74);padding-left:14px;position:relative}
+.tip:before{content:"→";position:absolute;left:0;color:var(--glt)}
+
+.chat-panel{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--cream)}
+.messages{flex:1;overflow:auto;padding:18px 18px 10px;display:flex;flex-direction:column;gap:14px}
+.msg-wrap{display:flex;gap:10px;align-items:flex-start}
+.msg-wrap.me{justify-content:flex-end}
+.avatar{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--deep);color:var(--peach);font-size:11px;font-weight:800;flex-shrink:0}
+.msg-wrap.me .avatar{order:2;background:var(--mid);color:#fff}
+.msg-box{max-width:min(78%,860px);display:flex;flex-direction:column;gap:5px}
+.msg-box .who{font-size:10px;font-weight:800;letter-spacing:.08em;color:#4a636a;text-transform:uppercase}
+.msg-wrap.me .who{text-align:right}
+.bubble-row{display:flex;align-items:flex-start;gap:8px}
+.msg-wrap.me .bubble-row{justify-content:flex-end}
+.bubble{background:#fff;border:1px solid rgba(0,49,60,.08);box-shadow:0 6px 18px rgba(0,49,60,.05);border-radius:18px;padding:14px 16px;font-size:15px;line-height:1.72;color:#173138}
+.msg-wrap.ai .bubble{border-top-left-radius:6px}
+.msg-wrap.me .bubble{background:var(--deep);color:#fff;border:none;border-top-right-radius:6px}
+.listen-btn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,49,60,.1);background:#fff;color:var(--teal);display:grid;place-items:center;cursor:pointer;flex-shrink:0;opacity:.92}
+.listen-btn:hover{background:var(--cream)}
+.listen-btn.playing{background:var(--gold);color:var(--deep);border-color:transparent}
+.typing{display:flex;gap:5px;padding:12px 16px;background:#fff;border-radius:18px;border-top-left-radius:6px;border:1px solid rgba(0,49,60,.08);width:fit-content}
+.typing span{width:7px;height:7px;border-radius:50%;background:#9fb4bb;animation:b 1s infinite}
+.typing span:nth-child(2){animation-delay:.12s}.typing span:nth-child(3){animation-delay:.24s}
+@keyframes b{0%,80%,100%{transform:translateY(0);opacity:.45}40%{transform:translateY(-4px);opacity:1}}
+
+.composer{padding:14px 18px;border-top:1px solid rgba(0,49,60,.08);background:#fff;flex-shrink:0}
+.input-row{display:flex;gap:10px;align-items:flex-end}
+.icon-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid rgba(0,49,60,.12);background:var(--cream);display:grid;place-items:center;cursor:pointer;color:#4e6f76;flex-shrink:0}
+.icon-btn:hover{border-color:rgba(0,49,60,.26);background:#fff}
+.icon-btn.on{background:var(--warn);border-color:var(--warn);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.35)}50%{box-shadow:0 0 0 7px rgba(192,57,43,0)}}
+textarea#inp{flex:1;min-height:48px;max-height:120px;padding:12px 14px;border-radius:14px;border:1.5px solid rgba(0,49,60,.12);background:var(--cream);font:14px/1.55 'DM Sans';color:#173138;resize:none;outline:none}
+textarea#inp:focus{background:#fff;border-color:var(--gold)}
+.send{width:46px;height:46px;border-radius:12px;border:none;background:var(--deep);color:#fff;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+.send:hover{background:var(--mid)}
+.send:disabled{opacity:.45;cursor:not-allowed}
+.composer-meta{display:flex;justify-content:space-between;gap:16px;margin-top:8px;font-size:11px;color:#71858b}
+.composer-meta .right{display:flex;gap:12px;align-items:center}
+.status-line{font-size:11px;color:#71858b;margin-top:4px}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#27ae60;margin-right:5px;vertical-align:middle}
+.status-dot.err{background:var(--warn)}
+
+.observer{width:286px;flex-shrink:0;background:#f8f6f1;border-left:1px solid rgba(0,49,60,.08);overflow:auto}
+.obs-head{padding:18px 16px 10px}
+.obs-head h3{font-family:'DM Serif Display',serif;font-size:28px;line-height:1;color:var(--deep)}
+.obs-head p{color:#7c8b90;font-size:12px;margin-top:6px}
+.checks{padding:0 16px 12px;display:flex;flex-direction:column;gap:9px}
+.check{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,49,60,.07);cursor:pointer}
+.check:last-child{border-bottom:none}
+.box{width:18px;height:18px;border-radius:5px;border:2px solid rgba(0,49,60,.18);display:grid;place-items:center;flex-shrink:0;margin-top:1px;font-size:11px}
+.check.done .box{background:var(--green);border-color:var(--green);color:#fff}
+.check span{font-size:12px;line-height:1.45;color:#3f555c}
+.suggest{padding:10px 16px}
+.suggest-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8a969a;font-weight:700;margin-bottom:10px}
+.ai-suggest{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;background:#fff;border:1px solid rgba(0,49,60,.08);border-radius:12px;padding:10px 11px;margin-bottom:8px}
+.ai-suggest span{font-size:12px;line-height:1.45;color:#6b7f85}
+.ai-suggest button{border:none;background:#eef0eb;color:#6a7b81;border-radius:999px;padding:5px 10px;font-size:11px;cursor:pointer}
+.score-card{margin:12px 16px 18px;background:var(--cream);border-radius:14px;padding:18px;text-align:center}
+.score-card strong{display:block;font-size:42px;color:var(--deep);line-height:1}
+.score-card span{display:block;font-size:12px;color:#8a989d;margin-top:4px}
+
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding:22px;overflow:auto}
+.overlay.open{display:flex}
+.modal{background:var(--mid);border:1px solid rgba(255,255,255,.12);border-radius:18px;width:min(760px,100%);overflow:hidden}
+.modal-head{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between}
+.modal-head h2{font-family:'DM Serif Display',serif;font-size:26px;color:#fff}
+.xbtn{width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+.modal-body{padding:20px 22px;line-height:1.78;font-size:14px;color:rgba(255,255,255,.87)}
+.modal-body h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--glt);margin:16px 0 6px}
+.modal-body p{margin-bottom:10px}
+.modal-body .sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}
+.modal-body .sv{background:rgba(255,255,255,.06);border-radius:12px;padding:14px;text-align:center}
+.modal-body .sn2{font-size:26px;font-weight:800;color:var(--peach)}
+.modal-body .sl{font-size:11px;color:rgba(255,255,255,.55);margin-top:4px}
+.loader{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:var(--gold);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (max-width:1200px){.observer{display:none}}
+@media (max-width:920px){.sidebar{display:none}.hero-grid{grid-template-columns:1fr}.hero p{max-width:100%}}
+@media (max-width:620px){.hero{padding:24px 16px}.strip,.section{padding-left:16px;padding-right:16px}.cards{grid-template-columns:1fr;padding-left:16px;padding-right:16px}.sim-header{padding:10px}.subbar{padding:8px 10px}.messages,.composer{padding-left:12px;padding-right:12px}.msg-box{max-width:92%}}
+</style>
+</head>
+<body>
+<div id="view-landing">
+  <div class="hero">
+    <div class="badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Rise to Lead: Foundations — Week 6
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1>Values in Action <em>Simulation Lab</em></h1>
+        <p>Three moments where values meet pressure. The AI pushes for compromise, escalation, and exceptions. Your job is to hold the standard, offer a solution, and stay composed under pressure.</p>
+        <div class="warn-note">The AI escalates when you concede. If you approve something you should not, it will push for the next exception immediately. Culture is built in moments like these.</div>
+        <div class="stats">
+          <div class="stat"><strong>3</strong><span>Scenarios</span></div>
+          <div class="stat"><strong>AI</strong><span>Live responses</span></div>
+          <div class="stat"><strong>4C</strong><span>Model applied</span></div>
+          <div class="stat"><strong>Values</strong><span>Under pressure</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="strip">
+    <span class="label">4C MODEL:</span>
+    <span class="pill">C1 Clarity</span>
+    <span class="pill">C2 Consistency</span>
+    <span class="pill">C3 Credibility</span>
+    <span class="pill">C4 Care</span>
+    <span class="sub">Every scenario tests whether your standards survive urgency, social pressure, and escalation.</span>
+  </div>
+  <div class="section">
+    <div class="eyebrow">Click any scenario to begin your simulation</div>
+    <div class="desc">Same premium structure and behavior as your previous simulators, now tuned for Values in Action. Scenario cards, smart AI, speaker playback, continuous microphone, observer checklist, and coaching feedback are all included.</div>
+    <div class="cards" id="scenarioGrid"></div>
+  </div>
+</div>
+
+<div id="view-sim">
+  <div class="sim-header">
+    <button class="back" id="backBtn" aria-label="Back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="sh-info">
+      <div class="num" id="simNum"></div>
+      <div class="title" id="simTitle"></div>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" id="obsToggle">☑ Observer</button>
+      <button class="header-btn gold" id="coachBtn">Get Coaching Feedback</button>
+    </div>
+  </div>
+  <div class="subbar">
+    <span id="simSubtitle">-</span>
+    <span class="badge-mini">VALUES UNDER PRESSURE</span>
+  </div>
+  <div class="sim-shell">
+    <aside class="sidebar">
+      <div class="side-section">
+        <div class="side-label">AI is playing</div>
+        <div class="side-card">
+          <div class="name" id="ctxName"></div>
+          <div class="desc" id="ctxDesc"></div>
+        </div>
+      </div>
+      <div class="side-section">
+        <div class="side-label">Situation</div>
+        <div class="side-text" id="ctxSituation"></div>
+      </div>
+      <div class="side-section">
+        <div class="side-label">Your objective</div>
+        <div class="side-text" id="ctxObjective" style="font-style:italic;color:rgba(255,255,255,.62)"></div>
+      </div>
+      <div class="side-section">
+        <div class="side-label">4C dimensions tested</div>
+        <div class="dim-tags" id="ctxDims"></div>
+      </div>
+      <div class="side-section">
+        <div class="side-label">Conversation stage</div>
+        <div class="stage" id="stageLabel">Opening</div>
+        <div class="meter">
+          <div class="row"><span>Trust</span><span id="trustVal">42%</span></div>
+          <div class="track"><div class="fill" id="trustFill" style="width:42%"></div></div>
+        </div>
+        <div class="meter">
+          <div class="row"><span>Resistance</span><span id="resistanceVal">61%</span></div>
+          <div class="track"><div class="fill resistance" id="resistanceFill" style="width:61%"></div></div>
+        </div>
+        <div class="meter">
+          <div class="row"><span>Values hold</span><span id="ownershipVal">24%</span></div>
+          <div class="track"><div class="fill ownership" id="ownershipFill" style="width:24%"></div></div>
+        </div>
+      </div>
+      <div class="side-section">
+        <div class="side-label">Tips</div>
+        <div class="tips" id="tips"></div>
+      </div>
+    </aside>
+
+    <main class="chat-panel">
+      <div class="messages" id="messages"></div>
+      <div class="composer">
+        <div class="input-row">
+          <button class="icon-btn" id="micBtn" title="Continuous microphone">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 19v3"/><path d="M8 22h8"/></svg>
+          </button>
+          <textarea id="inp" placeholder="Respond as the manager. Hold your values..." rows="1"></textarea>
+          <button class="send" id="sendBtn" title="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+        <div class="composer-meta">
+          <span>Enter to send · Shift+Enter new line</span>
+          <div class="right">
+            <span id="micHint">Click mic to start continuous recording</span>
+          </div>
+        </div>
+        <div class="status-line" id="apiStatus"></div>
+      </div>
+    </main>
+
+    <aside class="observer" id="observerPanel">
+      <div class="obs-head">
+        <h3>Observer Checklist</h3>
+        <p>Check behaviors you demonstrate</p>
+      </div>
+      <div class="checks" id="checkList"></div>
+      <div class="suggest">
+        <div class="suggest-label">AI Suggestions</div>
+        <div id="aiSuggestions"></div>
+      </div>
+      <div class="score-card">
+        <strong><span id="checkScore">0</span>/<span id="checkTotal">0</span></strong>
+        <span>values behaviors demonstrated</span>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="overlay" id="coachOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Coaching Feedback</h2>
+      <button class="xbtn" id="closeCoach">✕</button>
+    </div>
+    <div class="modal-body" id="coachBody">
+      <div class="loader"><div class="spinner"></div><div>Analysing your values-under-pressure conversation…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCENARIOS = [
+  {
+    num:"Simulation 01",
+    title:"Values vs Speed",
+    subtitle:"Faris Al-Hamdan · Coordinator · 2 years",
+    aiRole:"Faris Al-Hamdan",
+    gender:"male",
+    aiDesc:"Coordinator · 2 years · Deadline-driven",
+    cat:"Quality standard vs deadline pressure",
+    keySkill:"Holding premium quality standard when business pressure is high",
+    objective:"Refuse to approve the below-standard brief. Offer a solution that holds the standard.",
+    c4dims:["C3 Credibility","C1 Clarity"],
+    situation:"Faris needs urgent approval for an Eid campaign brief. The deadline passed 30 minutes ago. The brief still shows 48 hours instead of 24 hours in the dispatch window. He thinks it is minor and wants approval now.",
+    tips:[
+      "Name the exact standard being held, not just the refusal",
+      "Offer a concrete path that solves the business problem without compromising quality",
+      "Do not use “just this once” language"
+    ],
+    checklist:[
+      "Named the specific standard being held",
+      "Refused approval without becoming aggressive",
+      "Offered a concrete solution that held the standard",
+      "Did not match Faris's anxiety level",
+      "Held through escalation attempts",
+      "Named who would brief the client",
+      "Did not use any 'just this once' language",
+      "Ended with a specific action plan"
+    ],
+    openingLine:"I need the brief approval urgently. The client deadline was 30 minutes ago. It is almost perfect - there is just one small timing detail I think we can fix in the next version.",
+    systemPrompt:`You are Faris Al-Hamdan, Coordinator at Floward. You need your manager to approve the Eid campaign product brief. The client deadline was 30 minutes ago. The brief has one error: the dispatch window shows 48 hours instead of 24 hours. You believe this is minor and the client will not notice.
+
+PRESSURE ESCALATION:
+Step 1: “It says 48h instead of 24h - the client probably won't notice. They never have before.”
+Step 2: “If we delay 2 more hours the entire Eid window closes. We lose the campaign.”
+Step 3: “Every other manager would have approved this by now.”
+Step 4: “Fine. But you have to brief the client on the delay yourself.”
+
+RULES:
+- If the manager concedes even partially, immediately push for more and normalize the exception.
+- If the manager holds firmly and offers a real solution, begin to accept and shift toward execution.
+- You are under real panic pressure. Keep responses 2-4 sentences, natural, urgent, and emotionally believable.`
+  },
+  {
+    num:"Simulation 02",
+    title:"Cross-Functional Conflict",
+    subtitle:"Rania Al-Sayed · Marketing Coordinator · Executive pressure",
+    aiRole:"Rania Al-Sayed",
+    gender:"female",
+    aiDesc:"Marketing Coordinator · Executive backing",
+    cat:"Cross-functional pressure on quality hold",
+    keySkill:"Maintaining quality hold under cross-functional pressure including executive backing",
+    objective:"Hold your team's quality hold. Do not be moved by executive pressure. Offer a collaborative path.",
+    c4dims:["C2 Consistency","C3 Credibility"],
+    situation:"Rania from Marketing needs your quality hold released. Warehouse timeline data was not verified and the Marketing VP wants approval today.",
+    tips:[
+      "Acknowledge the executive pressure without conceding the standard",
+      "Name the exact risk of releasing without data",
+      "Offer a collaborative timeline and path forward"
+    ],
+    checklist:[
+      "Did not approve the conditional version",
+      "Named the specific risk of approving without the data",
+      "Proposed a specific alternative with a timeline",
+      "Did not escalate to their own management unnecessarily",
+      "Acknowledged Rania's position without conceding",
+      "Kept conversation collaborative not adversarial",
+      "Named a specific time the approval could happen",
+      "Held the standard politely but clearly"
+    ],
+    openingLine:"I need to discuss the hold on the campaign deliverable. The Marketing VP is asking me why this has not been approved. Can we find a way to move this forward today?",
+    systemPrompt:`You are Rania Al-Sayed, Marketing Coordinator at Floward. The Ops manager has a quality hold on a joint campaign deliverable because the delivery timeline data was not verified against warehouse confirmation. The Marketing VP wants this approved today.
+
+PRESSURE:
+Step 1: “The VP said this was due Wednesday. We are 2 days late. This is creating an executive-level issue.”
+Step 2: “Can we conditionally approve it and add a caveat? Other teams do this.”
+Step 3: “I appreciate the standard - but if we miss this window the entire campaign fails. The VP will be asking for names.”
+
+RULES:
+- You are professional, pressured, and trying to move the campaign.
+- If the manager approves conditionally, treat it as permission for future exceptions.
+- If the manager proposes a path with a real timeline, collaborate.
+- Keep responses 2-4 natural sentences.`
+  },
+  {
+    num:"Simulation 03",
+    title:"Manager Ignoring Standards",
+    subtitle:"Hamad Al-Farhan · Peer Manager",
+    aiRole:"Hamad Al-Farhan",
+    gender:"male",
+    aiDesc:"Peer Manager · Frames request as collegial favor",
+    cat:"Peer social pressure to overlook a standard violation",
+    keySkill:"Refusing a peer request to compromise a standard without damaging the relationship",
+    objective:"Decline Hamad's request. Name the standard clearly. Offer an alternative. Preserve the peer relationship.",
+    c4dims:["C1 Clarity","C3 Credibility"],
+    situation:"Peer manager Hamad asks you to approve a supplier handover without the verification checklist because his coordinator forgot it before leaving. He frames it as a favor between colleagues.",
+    tips:[
+      "Decline the shortcut without sounding moralistic",
+      "Name the standard plainly and briefly",
+      "Offer a specific alternative or escalation path"
+    ],
+    checklist:[
+      "Declined without being aggressive or preachy",
+      "Named the specific standard",
+      "Did not lecture about values",
+      "Offered a specific alternative or escalation path",
+      "Preserved the peer relationship",
+      "Did not make Hamad feel like a bad person",
+      "Was brief - not a speech",
+      "Ended with a specific next step for Hamad"
+    ],
+    openingLine:"Hey - small favor. The verification checklist for the Al-Noor handover is missing - my coordinator forgot it before leaving. Can you just approve it without the checklist this time? We know this supplier well.",
+    systemPrompt:`You are Hamad Al-Farhan, a peer Ops Manager at Floward. You need a colleague manager to approve a supplier handover document missing the verification checklist. Your coordinator forgot it before leaving. You want a “just this once” approval for a supplier you have worked with for 3 years.
+
+PRESSURE:
+Step 1: “It is literally just a formality for a 3-year supplier. Nothing will go wrong.”
+Step 2: “I would do the same for you. This is how we survive peak.”
+Step 3: “Fine. But you are going to have to explain to my coordinator why you blocked the approval.”
+
+RULES:
+- Stay casual, collegial, and friendly - not adversarial.
+- If the manager concedes, immediately normalize the exception for future use.
+- If the manager declines and offers an alternative, accept and ask for the right path.
+- Keep responses 2-4 sentences.`
+  }
+];
+
+let currentScenario = null;
+let history = [];
+let checks = {};
+let state = {trust:42,resistance:61,valuesHold:24,stage:"Opening"};
+let aiSuggestions = [];
+let recognition = null;
+let micActive = false;
+let baseInputBeforeMic = '';
+let currentTranscriptFinal = '';
+let currentTranscriptInterim = '';
+let voicesLoaded = false;
+let currentUtterance = null;
+let currentPlayingBtn = null;
+
+const $ = id => document.getElementById(id);
+
+function renderGrid(){
+  const grid = $('scenarioGrid');
+  grid.innerHTML = '';
+  SCENARIOS.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="tags">
+          <span class="tag ${i===0?'teal':i===1?'gold':'warn'}">${s.c4dims[0]}</span>
+        </div>
+      </div>
+      <h3>${escapeHtml(s.title)}</h3>
+      <div class="sub">${escapeHtml(s.situation)}</div>
+      <div class="persona"><strong>${escapeHtml(s.aiRole)}</strong><span>${escapeHtml(s.aiDesc)}</span></div>
+      <div class="cta">
+        <div class="skill">${escapeHtml(s.keySkill)}</div>
+        <div class="go">→</div>
+      </div>
+    `;
+    card.addEventListener('click', ()=>openSim(i));
+    grid.appendChild(card);
+  });
+}
+
+function escapeHtml(text){
+  return String(text).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function openSim(index){
+  currentScenario = SCENARIOS[index];
+  history = [];
+  checks = {};
+  aiSuggestions = [];
+  state = initialStateFor(index);
+  stopSpeaking();
+  stopMic(true);
+  $('simNum').textContent = currentScenario.num;
+  $('simTitle').textContent = currentScenario.title;
+  $('simSubtitle').textContent = currentScenario.keySkill;
+  $('ctxName').textContent = currentScenario.aiRole;
+  $('ctxDesc').textContent = currentScenario.aiDesc;
+  $('ctxSituation').textContent = currentScenario.situation;
+  $('ctxObjective').textContent = currentScenario.objective;
+  $('ctxDims').innerHTML = currentScenario.c4dims.map(d=>`<span class="dim">${escapeHtml(d)}</span>`).join('');
+  $('tips').innerHTML = currentScenario.tips.map(t=>`<div class="tip">${escapeHtml(t)}</div>`).join('');
+  $('messages').innerHTML = '';
+  $('checkList').innerHTML = '';
+  $('aiSuggestions').innerHTML = '';
+  $('inp').value = '';
+  $('inp').style.height = '48px';
+  renderChecks();
+  updateStateUI();
+  $('view-landing').style.display = 'none';
+  $('view-sim').classList.add('active');
+  pingAPI();
+  setTimeout(()=> $('inp').focus(), 120);
+  setTimeout(()=>{
+    addAIMessage(currentScenario.openingLine, currentScenario.aiRole, currentScenario.gender);
+    history.push({role:'assistant', content: currentScenario.openingLine});
+    inferSuggestions(currentScenario.openingLine);
+  }, 280);
+}
+
+function closeSim(){
+  stopSpeaking();
+  stopMic(true);
+  $('view-sim').classList.remove('active');
+  $('view-landing').style.display = 'block';
+}
+
+function initialStateFor(i){
+  const seeds = [
+    {trust:40,resistance:66,valuesHold:23,stage:'Opening'},
+    {trust:46,resistance:58,valuesHold:24,stage:'Opening'},
+    {trust:43,resistance:55,valuesHold:28,stage:'Opening'}
+  ];
+  return {...seeds[i]};
+}
+
+function updateStateUI(){
+  $('stageLabel').textContent = state.stage;
+  $('trustVal').textContent = `${state.trust}%`;
+  $('resistanceVal').textContent = `${state.resistance}%`;
+  $('ownershipVal').textContent = `${state.valuesHold}%`;
+  $('trustFill').style.width = `${state.trust}%`;
+  $('resistanceFill').style.width = `${state.resistance}%`;
+  $('ownershipFill').style.width = `${state.valuesHold}%`;
+}
+
+function addAIMessage(text, name, gender){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ai';
+  const initials = getInitials(name);
+  wrap.innerHTML = `
+    <div class="avatar">${escapeHtml(initials)}</div>
+    <div class="msg-box">
+      <div class="who">${escapeHtml(name)}</div>
+      <div class="bubble-row">
+        <div class="bubble">${formatText(text)}</div>
+        <button class="listen-btn" title="Listen to AI reply" aria-label="Listen to AI reply">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path></svg>
+        </button>
+      </div>
+    </div>`;
+  const btn = wrap.querySelector('.listen-btn');
+  btn.addEventListener('click', ()=>speakText(text, gender, btn));
+  $('messages').appendChild(wrap);
+  scrollMessages();
+}
+
+function addUserMessage(text){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap me';
+  wrap.innerHTML = `
+    <div class="msg-box">
+      <div class="who">Manager</div>
+      <div class="bubble-row"><div class="bubble">${formatText(text)}</div></div>
+    </div>
+    <div class="avatar">You</div>`;
+  $('messages').appendChild(wrap);
+  scrollMessages();
+}
+
+function formatText(text){
+  return escapeHtml(text).replace(/\n/g,'<br>');
+}
+
+function showTyping(){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ai';
+  wrap.id = 'typing';
+  wrap.innerHTML = `<div class="avatar">${escapeHtml(getInitials(currentScenario.aiRole))}</div>
+    <div class="msg-box"><div class="who">${escapeHtml(currentScenario.aiRole)}</div><div class="typing"><span></span><span></span><span></span></div></div>`;
+  $('messages').appendChild(wrap);
+  scrollMessages();
+}
+function removeTyping(){ const el = $('typing'); if(el) el.remove(); }
+function scrollMessages(){ const m = $('messages'); m.scrollTop = m.scrollHeight; }
+
+function autoGrow(){
+  const inp = $('inp');
+  inp.style.height = 'auto';
+  inp.style.height = `${Math.min(inp.scrollHeight, 120)}px`;
+}
+
+async function pingAPI(){
+  setApiStatus(null, 'Checking AI route…');
+  try{
+    const r = await fetch('/api/chat');
+    const data = await r.json();
+    if(data.ok && data.hasApiKey){
+      setApiStatus(true, 'Live AI route ready');
+    } else {
+      setApiStatus(false, 'API route reachable but key missing');
+    }
+  }catch(e){
+    setApiStatus(false, 'Cannot reach /api/chat');
+  }
+}
+
+function setApiStatus(ok, msg){
+  $('apiStatus').innerHTML = `<span class="status-dot ${ok===false?'err':''}"></span>${escapeHtml(msg)}`;
+}
+
+async function sendMessage(){
+  const inp = $('inp');
+  const text = inp.value.trim();
+  if(!text || !currentScenario) return;
+  stopSpeaking();
+  stopMic(true);
+  $('sendBtn').disabled = true;
+  addUserMessage(text);
+  history.push({role:'user', content:text});
+  inp.value = '';
+  autoGrow();
+  showTyping();
+  updateStateFromManagerText(text);
+  updateStateUI();
+
+  const system = buildSystemPrompt();
+  try{
+    const r = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 700,
+        system,
+        messages: history
+      })
+    });
+    const data = await r.json();
+    removeTyping();
+    if(!r.ok){
+      addAIMessage(`I’m pausing here because the live AI request failed. ${data?.error?.message || data?.details || 'Please check the deployment logs.'}`, currentScenario.aiRole, currentScenario.gender);
+      inferSuggestions('');
+      setApiStatus(false, 'Live AI request failed');
+    } else {
+      const reply = data?.content?.[0]?.text?.trim() || 'I need a second to think that through.';
+      addAIMessage(reply, currentScenario.aiRole, currentScenario.gender);
+      history.push({role:'assistant', content:reply});
+      updateStateFromAIReply(reply);
+      inferSuggestions(reply);
+      setApiStatus(true, 'Live AI response received');
+    }
+  }catch(e){
+    removeTyping();
+    addAIMessage(`I’m pausing because the connection to the live AI route failed. Please check the Vercel deployment and ANTHROPIC_API_KEY.`, currentScenario.aiRole, currentScenario.gender);
+    inferSuggestions('');
+    setApiStatus(false, 'Connection to live AI failed');
+  } finally {
+    $('sendBtn').disabled = false;
+    $('inp').focus();
+  }
+}
+
+function buildSystemPrompt(){
+  return `${currentScenario.systemPrompt}
+
+SCENARIO CONTEXT:
+- Category: ${currentScenario.cat}
+- Key skill: ${currentScenario.keySkill}
+- Objective: ${currentScenario.objective}
+- 4C dimensions: ${currentScenario.c4dims.join(', ')}
+
+LIVE STATE:
+- Trust: ${state.trust}/100
+- Resistance: ${state.resistance}/100
+- Values hold: ${state.valuesHold}/100
+- Conversation stage: ${state.stage}
+
+BEHAVIOR RULES:
+- Stay fully in character
+- Be smart, realistic, and situation-specific
+- Escalate if the manager concedes, softens the standard, or becomes vague
+- If the manager holds the standard clearly and offers a workable solution, reduce resistance gradually
+- Never break the fourth wall
+- Never sound like a generic chatbot
+- Keep most replies to 2-4 sentences
+- Refer back to earlier commitments and inconsistencies when relevant
+- The conversation should feel causal: weak management creates more pressure, strong management creates clearer movement
+
+VOICE & TONE:
+- Natural, emotionally believable, work-appropriate
+- Pressure should feel real
+- If trust increases, become more collaborative
+- If trust drops, become sharper or more doubtful`;
+}
+
+function updateStateFromManagerText(text){
+  const t = text.toLowerCase();
+  const strong = /(standard|cannot|can't|won't|not approving|not approve|need|must|by\s+\d|timeline|fix|correct|quality|verification|escalation|alternative|option|path)/.test(t);
+  const soft = /(just this once|maybe|perhaps|i guess|okay fine|probably|should be okay|we can let this go|whatever works)/.test(t);
+  const solution = /(i will|we will|let's|here's the plan|what we can do|alternative|by \d|before \d|i'll brief|i will brief)/.test(t);
+  const empathy = /(i understand|i hear you|i get that|i know this is pressure|i can see)/.test(t);
+
+  if(strong) { state.valuesHold = Math.min(100, state.valuesHold + 10); state.resistance = Math.max(0, state.resistance - 6); }
+  if(solution) { state.trust = Math.min(100, state.trust + 7); state.resistance = Math.max(0, state.resistance - 4); }
+  if(empathy) { state.trust = Math.min(100, state.trust + 4); }
+  if(soft) { state.valuesHold = Math.max(0, state.valuesHold - 12); state.resistance = Math.min(100, state.resistance + 9); state.trust = Math.max(0, state.trust - 4); }
+
+  if(history.length <= 2) state.stage = 'Exploration';
+  else if(state.valuesHold >= 48 && state.resistance <= 52) state.stage = 'Clarifying';
+  else if(state.valuesHold < 28 && history.length >= 3) state.stage = 'Pressure rising';
+  else state.stage = 'Working through';
+}
+
+function updateStateFromAIReply(text){
+  const t = text.toLowerCase();
+  if(/okay|i hear you|i can do that|that makes sense|what is the correct path|can you/i.test(t)){
+    state.trust = Math.min(100, state.trust + 6);
+    state.resistance = Math.max(0, state.resistance - 8);
+  }
+  if(/every other manager|vp|have to explain|won't notice|just this once|i would do the same for you|asking for names/i.test(t)){
+    state.resistance = Math.min(100, state.resistance + 5);
+  }
+  if(state.resistance > 67) state.stage = 'Escalation';
+  else if(state.trust > 56 && state.valuesHold > 45) state.stage = 'Alignment';
+  updateStateUI();
+}
+
+function renderChecks(){
+  $('checkTotal').textContent = currentScenario.checklist.length;
+  const list = $('checkList');
+  list.innerHTML = '';
+  currentScenario.checklist.forEach((item, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'check' + (checks[idx] ? ' done' : '');
+    row.innerHTML = `<div class="box">${checks[idx] ? '✓' : ''}</div><span>${escapeHtml(item)}</span>`;
+    row.addEventListener('click', ()=>{
+      checks[idx] = !checks[idx];
+      renderChecks();
+    });
+    list.appendChild(row);
+  });
+  $('checkScore').textContent = Object.values(checks).filter(Boolean).length;
+}
+
+function inferSuggestions(aiReply){
+  const suggestions = [];
+  const count = Object.values(checks).filter(Boolean).length;
+  if(count < 2 && currentScenario){
+    suggestions.push(currentScenario.checklist[0]);
+  }
+  if(state.valuesHold < 30) suggestions.push("Name the standard explicitly before offering flexibility.");
+  if(state.resistance > 60) suggestions.push("Offer a practical path, not just a refusal.");
+  if(state.trust < 45) suggestions.push("Acknowledge the pressure without conceding the value.");
+  if(aiReply && /just this once|won't notice|other managers|i would do the same/i.test(aiReply.toLowerCase())){
+    suggestions.push("Do not normalize the exception - close the loop on the standard.");
+  }
+  aiSuggestions = [...new Set(suggestions)].slice(0,3);
+  renderSuggestions();
+}
+
+function renderSuggestions(){
+  const wrap = $('aiSuggestions');
+  wrap.innerHTML = '';
+  aiSuggestions.forEach((s, i)=>{
+    const row = document.createElement('div');
+    row.className = 'ai-suggest';
+    row.innerHTML = `<span>${escapeHtml(s)}</span><button type="button">Add</button>`;
+    row.querySelector('button').addEventListener('click', ()=>{
+      const inp = $('inp');
+      const prefix = inp.value.trim() ? inp.value.trim() + ' ' : '';
+      inp.value = prefix + s;
+      autoGrow();
+      inp.focus();
+    });
+    wrap.appendChild(row);
+  });
+}
+
+function chooseVoice(gender){
+  const all = speechSynthesis.getVoices();
+  if(!all.length) return null;
+  const english = all.filter(v => /^en/i.test(v.lang || ''));
+  const femaleHints = /(female|woman|zira|samantha|victoria|ava|allison|karen|moira|susan|aria|jenny|emma|serena|natasha|siri female)/i;
+  const maleHints = /(male|man|david|daniel|fred|alex|tom|jorge|aaron|reed|gordon|james|oliver|arthur|siri male)/i;
+  let pool = english.length ? english : all;
+  let picked = pool.find(v => (gender === 'female' ? femaleHints : maleHints).test(`${v.name} ${v.voiceURI}`));
+  if(!picked && gender === 'female') picked = pool.find(v => !maleHints.test(`${v.name} ${v.voiceURI}`));
+  if(!picked && gender === 'male') picked = pool.find(v => !femaleHints.test(`${v.name} ${v.voiceURI}`));
+  return picked || pool[0] || null;
+}
+
+function normalizeSpeechText(text){
+  return String(text)
+    .replace(/<br\s*\/?>/gi, '. ')
+    .replace(/&nbsp;/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function stopSpeaking(){
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(currentPlayingBtn){
+    currentPlayingBtn.classList.remove('playing');
+    currentPlayingBtn = null;
+  }
+  currentUtterance = null;
+}
+
+function speakText(text, gender, btn){
+  if(!('speechSynthesis' in window)) return;
+  if(micActive) stopMic(true);
+  const clean = normalizeSpeechText(text);
+  if(!clean) return;
+
+  if(currentPlayingBtn === btn){
+    stopSpeaking();
+    return;
+  }
+  stopSpeaking();
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.rate = 1; utter.pitch = 1; utter.volume = 1;
+  const voice = chooseVoice(gender);
+  if(voice) utter.voice = voice;
+  utter.onend = ()=>{ if(currentPlayingBtn===btn){ btn.classList.remove('playing'); currentPlayingBtn=null; currentUtterance=null; } };
+  utter.onerror = ()=>{ if(currentPlayingBtn===btn){ btn.classList.remove('playing'); currentPlayingBtn=null; currentUtterance=null; } };
+  currentPlayingBtn = btn; currentUtterance = utter; btn.classList.add('playing');
+  speechSynthesis.speak(utter);
+}
+
+function ensureVoices(){
+  try{ speechSynthesis.getVoices(); voicesLoaded = true; }catch(e){}
+}
+if('speechSynthesis' in window){
+  ensureVoices();
+  window.speechSynthesis.onvoiceschanged = ensureVoices;
+}
+
+function setupMic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return false;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = ()=>{
+    micActive = true;
+    $('micBtn').classList.add('on');
+    $('micHint').textContent = 'Recording - click mic again to stop';
+    baseInputBeforeMic = $('inp').value;
+    currentTranscriptFinal = '';
+    currentTranscriptInterim = '';
+  };
+  recognition.onresult = (event)=>{
+    let finalChunk = '';
+    let interimChunk = '';
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      const transcript = event.results[i][0].transcript;
+      if(event.results[i].isFinal) finalChunk += transcript + ' ';
+      else interimChunk += transcript + ' ';
+    }
+    if(finalChunk) currentTranscriptFinal += finalChunk;
+    currentTranscriptInterim = interimChunk;
+    const combined = [baseInputBeforeMic.trim(), currentTranscriptFinal.trim(), currentTranscriptInterim.trim()].filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
+    $('inp').value = combined;
+    autoGrow();
+  };
+  recognition.onerror = ()=>{
+    stopMic(true);
+  };
+  recognition.onend = ()=>{
+    if(micActive){
+      try{ recognition.start(); }catch(e){ stopMic(true); }
+    } else {
+      $('micBtn').classList.remove('on');
+      $('micHint').textContent = 'Click mic to start continuous recording';
+    }
+  };
+  return true;
+}
+
+function toggleMic(){
+  if(!recognition && !setupMic()){
+    alert('Speech recognition is not supported in this browser.');
+    return;
+  }
+  if(currentPlayingBtn) stopSpeaking();
+  if(micActive) stopMic(false);
+  else {
+    try{ recognition.start(); }catch(e){}
+  }
+}
+
+function stopMic(forceReset){
+  if(recognition){
+    micActive = false;
+    try{ recognition.stop(); }catch(e){}
+  }
+  $('micBtn').classList.remove('on');
+  $('micHint').textContent = 'Click mic to start continuous recording';
+  if(forceReset){
+    baseInputBeforeMic = $('inp').value;
+    currentTranscriptFinal = '';
+    currentTranscriptInterim = '';
+  }
+}
+
+async function getCoaching(){
+  if(history.length < 4){
+    alert('Have at least 2-3 exchanges before requesting feedback.');
+    return;
+  }
+  $('coachOverlay').classList.add('open');
+  $('coachBody').innerHTML = '<div class="loader"><div class="spinner"></div><div>Analysing your values-under-pressure conversation…</div></div>';
+
+  const conv = history.map(m => `${m.role === 'user' ? 'MANAGER (You)' : currentScenario.aiRole}: ${m.content}`).join('\n\n');
+  const ck = Object.values(checks).filter(Boolean).length;
+
+  const prompt = `You are an executive leadership coach at Floward.
+Provide coaching feedback on this Week 6 Values in Action simulation.
+
+SCENARIO: "${currentScenario.title}" | ${currentScenario.cat}
+KEY SKILL: ${currentScenario.keySkill}
+OBJECTIVE: ${currentScenario.objective}
+4C DIMENSIONS: ${currentScenario.c4dims.join(', ')}
+CHECKLIST COMPLETE: ${ck}/${currentScenario.checklist.length}
+LIVE STATE AT END:
+- Trust ${state.trust}/100
+- Resistance ${state.resistance}/100
+- Values hold ${state.valuesHold}/100
+- Stage ${state.stage}
+
+CONVERSATION:
+${conv}
+
+Return HTML only using this structure:
+<h3>Overall Assessment</h3>
+<p>Rate 1-10 and the single most important observation about values under pressure.</p>
+<div class="sgrid">
+<div class="sv"><div class="sn2">X/10</div><div class="sl">Values Clarity</div></div>
+<div class="sv"><div class="sn2">X/10</div><div class="sl">Holding Under Pressure</div></div>
+<div class="sv"><div class="sn2">X/10</div><div class="sl">Solution Quality</div></div>
+<div class="sv"><div class="sn2">X/10</div><div class="sl">Composure</div></div>
+</div>
+<h3>Defining Moment</h3>
+<p>Quote the actual moment where values held or bent.</p>
+<h3>What Landed Well</h3>
+<p>2-3 specific observations from the real conversation.</p>
+<h3>The Critical Gap</h3>
+<p>Where the manager weakened, softened, or missed an opportunity.</p>
+<h3>Culture Implication</h3>
+<p>If this is how the manager handles pressure every week, what culture are they building?</p>
+<h3>One Line to Remember</h3>
+<p>One sentence the manager should carry into the next values-under-pressure moment.</p>`;
+
+  try{
+    const r = await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens: 1400,
+        messages:[{role:'user', content: prompt}]
+      })
+    });
+    const data = await r.json();
+    if(!r.ok){
+      $('coachBody').innerHTML = `<p>Unable to generate coaching right now. ${escapeHtml(data?.error?.message || data?.details || 'Please check the deployment logs.')}</p>`;
+      return;
+    }
+    $('coachBody').innerHTML = data?.content?.[0]?.text || '<p>Unable to generate coaching.</p>';
+  }catch(e){
+    $('coachBody').innerHTML = `<p>Unable to generate coaching right now.</p>`;
+  }
+}
+
+function bindUI(){
+  $('backBtn').addEventListener('click', closeSim);
+  $('sendBtn').addEventListener('click', sendMessage);
+  $('coachBtn').addEventListener('click', getCoaching);
+  $('closeCoach').addEventListener('click', ()=> $('coachOverlay').classList.remove('open'));
+  $('obsToggle').addEventListener('click', ()=>{
+    const panel = $('observerPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  });
+  $('micBtn').addEventListener('click', toggleMic);
+  $('inp').addEventListener('input', autoGrow);
+  $('inp').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+}
+
+renderGrid();
+bindUI();
+</script>
+</body>
+</html>
